@@ -1,0 +1,225 @@
+/**
+ * This class creates, and manages the population. Methods regarding operations in which every miner needs to 
+ * complete at the same time are here. Information regarding the whole population is located here.
+ * @author Sam Selkregg
+ */
+package cryptoSimulation;
+
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+
+public class Population 
+{
+	//ArrayLists storing the miner population
+	private ArrayList<Miner> allMiners = new ArrayList<Miner>();
+	private ArrayList<Miner> participating = new ArrayList<Miner>();
+	private ArrayList<Miner> nonParticipating = new ArrayList<Miner>();
+	
+	//how many miners belong to each pool
+	private int[] poolQuantities = new int[21];
+	private int successfulPool;
+	
+	//the value of the monitored cryptocurrency, and what it was.
+	public int cryptoValue = 6733;
+	public int prevCV = 6583;
+	public int valueStreak = 1;
+	
+	/**
+	 * Creates a population of miners
+	 * @param howMany how many miners there are to create
+	 */
+	public void create(int howMany, Population p)
+	{
+		for(int minerID = 0; minerID < (howMany - 1); minerID++)
+		{
+			allMiners.add(new Miner(minerID, p));
+		}
+		updateLists();
+	}
+	
+	
+	/**
+	 * Updates Active and nonActive lists
+	 */
+	public void updateLists() {
+		participating.clear();
+		nonParticipating.clear();
+		for(int i = 0; i<allMiners.size(); i++)
+		{
+			if(allMiners.get(i).getStatus() == true)
+			{
+				participating.add(allMiners.get(i));
+				//increment pool quantities
+				poolQuantities[allMiners.get(i).getPool()]++;
+			}else
+			{
+				nonParticipating.add(allMiners.get(i));
+			}
+			
+		}
+	}
+	
+	/**
+	 * Tells the entire population to evaluate itself at the current situation,
+	 * and make intelligent decisions based on your status.
+	 */
+	public void totalEvaluation()
+	{
+		distributeRewards();
+		for(int i = 0; i < allMiners.size(); i++)
+		{
+			allMiners.get(i).roundChange(poolQuantities[successfulPool]);
+			updateLists();	
+		}
+	}
+	
+	/**
+	 * Distributes the reward to the selected winners.
+	 */
+	public void distributeRewards()
+	{
+		int winner = (int)(Math.random() * participating.size() + 1);
+		int winningPool = participating.get(winner).getPool();
+		successfulPool = winningPool;
+		if(winningPool != 0)
+		{
+			double individualReward = 25 / poolQuantities[participating.get(winner).getPool()];
+		
+			for(int i = 0;i<participating.size();i++)
+			{
+				int currentPool = participating.get(i).getPool();
+				if(currentPool == winningPool)
+				{
+					participating.get(i).updateCoins(individualReward, cryptoValue);
+				}
+			}
+		} else
+		{
+			participating.get(winner).updateCoins(25, cryptoValue);
+		}
+		
+		
+	}
+	
+	
+	/**
+	 * Updates the value of the currency, updates the streak of the values trend,
+	 * for miner decision making purposes.
+	 */
+	public void updateValue()
+	{
+		boolean positiveTrend;
+		if(cryptoValue>=prevCV)
+		{
+			positiveTrend = true;
+		}else
+		{
+			positiveTrend = false;
+		}
+		prevCV = cryptoValue;
+		//bitcoin range of values for the past year: roughly 4000-19000
+		//create range of random numbers
+		int r = (int)(Math.random() * 100 + 1);
+		int change;
+		if(r>90)
+		{
+			change = (int)(Math.random() * 500 + 250);
+			cryptoValue = cryptoValue + change;
+		}else if((r<=90)&&(r>75))
+		{
+			change = (int)(Math.random() * 250 + 100);
+			cryptoValue = cryptoValue + change;
+		}else if((r<=75)&&(r>50))
+		{
+			change = (int)(Math.random() * 100 + 1);
+			cryptoValue = cryptoValue + change;
+		}else if((r<=50)&&(r>25))
+		{
+			change = (int)(Math.random() * 100 + 1);
+			cryptoValue = cryptoValue - change;
+		}else if((r<=25)&&(r>10))
+		{
+			change = (int)(Math.random() * 250 + 100);
+			cryptoValue = cryptoValue - change;
+		}else
+		{
+			change = (int)(Math.random() * 500 + 250);
+			cryptoValue = cryptoValue - change;
+		}
+		
+		//prevents the value from going too low
+		if(cryptoValue<=400)
+		{
+			cryptoValue = cryptoValue + (change * 2);
+		}
+
+		//update the value streak
+		if(positiveTrend == true)
+		{
+			if(cryptoValue>prevCV)
+			{
+				valueStreak++;
+			}else
+			{
+				valueStreak = 1;
+			}
+		}else
+		{
+			if(cryptoValue>prevCV)
+			{
+				valueStreak = 1;
+			}else
+			{
+				valueStreak++;
+			}
+		}
+	}
+	
+	
+	/**
+	 * Updates the simulation report file
+	 * @throws FileNotFoundException 
+	 */
+	public void postFileUpdates(int round) throws FileNotFoundException
+	{
+		if((round%1000)==0)
+		{
+			String fileName = "simulationReport.txt";
+			PrintWriter pw = new PrintWriter(fileName);
+			pw.print("CURRENT ROUND: ");
+			pw.print(round);
+			pw.println();
+			pw.print("Miners Participating: ");
+			pw.print(participating.size());
+			pw.println();
+			pw.println("Miners Idle: ");
+			pw.print(nonParticipating.size());
+			pw.println();
+		}
+	}
+	
+	/**
+	 * @return the current value streak
+	 */
+	public int getValueStreak()
+	{
+		return valueStreak;
+	}
+	
+	/**
+	 * @return the reward value in dollars
+	 */
+	public int getRewardValue()
+	{
+		return (cryptoValue * 25);
+	}
+	
+	/**
+	 * @return the previous reward value in dollars
+	 */
+	public int getPrevRewardValue()
+	{
+		return (prevCV * 25);
+	}
+}

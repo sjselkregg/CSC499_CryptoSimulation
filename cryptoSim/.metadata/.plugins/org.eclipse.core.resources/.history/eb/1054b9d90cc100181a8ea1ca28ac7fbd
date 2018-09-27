@@ -1,0 +1,57 @@
+package cryptoSimulation;
+
+import java.util.ArrayList;
+
+import cryptoSim.Observers;
+
+public class Population 
+{
+	private ArrayList<Miner> allMiners = new ArrayList<Miner>();
+	private ArrayList<Miner> participating = new ArrayList<Miner>();
+	private ArrayList<Miner> nonParticipating = new ArrayList<Miner>();
+	
+	/**
+	 * Creates a population of miners
+	 * @param howMany how many miners there are to create
+	 */
+	public void create(int howMany)
+	{
+		for(int minerID = 0; minerID < (howMany - 1); minerID++)
+		{
+			allMiners.add(new Miner(minerID));
+		}
+		updateLists();
+	}
+	
+	
+	/**
+	 * Updates Active and nonActive lists
+	 */
+	public void updateLists() {
+		participating.clear();
+		nonParticipating.clear();
+		for(int i = 0; i<allMiners.size(); i++)
+		{
+			if(allMiners.get(i).getStatus() == true)
+			{
+				participating.add(allMiners.get(i));
+			}else
+			{
+				nonParticipating.add(allMiners.get(i));
+			}
+		}
+	}
+	
+	
+	public void totalEvaluation()
+	{
+		for(int i = 0; i < allMiners.size(); i++)
+		{
+			allMiners.get(i).evaluateSituation();
+		}
+	}
+	
+	
+	
+	
+}

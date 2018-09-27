@@ -1,0 +1,27 @@
+package cryptoSimulationTests;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+import cryptoSimulation.Miner;
+
+public class minerTest {
+
+	@Test
+	public void test() {
+		fail("Not yet implemented");
+	}
+	
+	
+	@Test
+	public void testInitialization()
+	{
+		Miner x = new Miner(1);
+		Miner y = new Miner(2);
+		Miner z = new Miner(3);
+		assertNotEquals(x.pool, y.pool);
+		
+	}
+
+}
