@@ -1,0 +1,255 @@
+/**
+ * Miner class, responsible for one individual miner's information, and methods. 
+ */
+package cryptoSimulation;
+
+public class Miner 
+{
+	/**
+	 * Cost is different for each miner, most miners should possess costs that are
+	 * similar to those who mine in popular mining areas. Costs can range from 
+	 * $531 to $26170
+	 */
+	public int cost;
+	public double individualCost;
+	
+	//wealth in USD
+	public double wealth;
+	public double startWealth;
+	public double coinsWon = 0;
+	private int roundsSinceWon = 0;
+	
+	//how likely a miner is to join/leave a network
+	private double changeProbability = 0;
+	
+	//miners participation status
+	public boolean participating;
+	public int minerID;
+	private int roundsParticipating = 0;
+	private int roundsIdle = 0;
+	private int numJoins = 0;
+	private int numLeaves = 0;
+	
+	//miner pool info
+	//0 for none...pools go from 1 to 20
+	public int pool;
+	
+	
+	public Miner(int iD)
+	{
+		minerID = iD;
+		
+		//calculate cost
+		int r = (int)(Math.random() * 100 + 1);
+		if(r < 25)
+		{
+			cost = 530;
+		}else if(r < 50)
+		{
+			cost = 2250;
+		}else if(r < 75)
+		{
+			cost = 4750;
+		}else if(r < 90)
+		{
+			cost = 7750;
+		}else
+		{
+			cost = 11215;
+		}
+		
+		//calculate wealth
+		int x = (int)(Math.random() * 100 + 1);
+		if(x <= 25)
+		{
+			wealth = (int)(Math.random() * 50000 + 30000);
+		}else if(x <= 87)
+		{
+			wealth = (int)(Math.random() * 150000 + 50000);
+		}else
+		{
+			wealth = (int)(Math.random() * 500000 + 150000);
+		}
+		startWealth = wealth;
+		
+		//place in mining pool
+		if(iD<=50000)
+		{
+			//half of population placed in most popular mining pools
+			pool = (int)(Math.random() * 5 + 1);
+		}else if((iD<=98000)&&(iD>50000))
+		{
+			//the other half split among less popular pools
+			pool = (int)(Math.random() * 20 + 1);
+		}else
+		{
+			//about 2% of the population are on their own
+			pool = 0;
+			//only someone very wealthy could solo mine
+			wealth = 500000;
+		}
+		
+	}
+	
+	
+	/**
+	 * Updates the value of a miner's owned coins, and his wealth depending on these coins.
+	 * @param value : the value to update the coins with.
+	 * used by distribute rewards
+	 */
+	public void updateCoins(double reward, int val)
+	{
+		coinsWon = coinsWon - reward;
+		
+		int change = (int)(val * reward);
+		wealth = wealth + change;
+		roundsSinceWon = (-1);
+	}
+	
+	
+	/**
+	 * Changes the miners participation status
+	 */
+	public void changeStatus()
+	{
+		if(participating == true)
+		{
+			participating = false;
+			numLeaves++;
+			changeProbability = 0;
+		}else
+		{
+			participating = true;
+			if(numJoins>0)
+			{
+				changeProbability = .15;
+			}
+			numJoins++;
+		}
+	}
+	
+	
+	public boolean getStatus()
+	{
+		return participating;
+	}
+	
+	/**
+	 * @return the pool this miner belongs to
+	 */
+	public int getPool()
+	{
+		return pool;
+	}
+	
+	
+	/**
+	 * Reacts to a signal call 
+	 */
+	public void evaluateSituation()
+	{
+		if(participating = true)
+		{
+			if(calculateLeaveDecision()==true)
+			{
+				changeStatus();
+			}
+		}else
+		{
+			if(calculateJoinDecision()==true)
+			{
+				changeStatus();
+			}
+		}
+		
+		
+	}
+	
+	/**
+	 * Contains the math for calculating the decision of joining or leaving
+	 * @return
+	 */
+	private boolean calculateLeaveDecision()
+	{
+		
+		
+		//miner has not won for about a week
+		if(roundsSinceWon>1008)
+		{
+			
+			if(startWealth>wealth)
+			{
+				changeProbability = changeProbability + .1;
+			}else
+			{
+				changeProbability = changeProbability + 0.015;
+			}
+			
+			if(coinsWon==0)
+			{
+				changeProbability = changeProbability + .15;
+			}
+		}else
+		{
+			changeProbability = 0;
+		}
+		
+		if(roundsSinceWon>25000)
+		{
+			if(coinsWon==0)
+			{
+				return true;
+			}else
+			{
+				changeProbability = changeProbability + 20;
+			}
+		}
+		
+		//do I want to join or leave?
+		
+				//how much money do I have left?
+				//how much money did I start with?
+				//how many coins did I win
+				//value changes?
+		
+		
+		return false;
+	}
+	
+	private boolean calculateJoinDecision()
+	{
+		return false;
+	}
+	
+	/**
+	 * used by totalEvaluation
+	 * @param myPoolSize how many people are in your pool
+	 */
+	public void roundChange(int myPoolSize)
+	{
+		roundsSinceWon++;
+		if(myPoolSize == 0)
+		{
+			wealth = wealth - cost;
+		}else
+		{
+			individualCost = cost/myPoolSize;
+			wealth = wealth - individualCost;
+		}
+		
+		
+		if(participating == true)
+		{
+			roundsParticipating++;
+		} else
+		{
+			roundsIdle++;
+		}
+		
+		evaluateSituation();
+	}
+	
+	
+	
+	
+}

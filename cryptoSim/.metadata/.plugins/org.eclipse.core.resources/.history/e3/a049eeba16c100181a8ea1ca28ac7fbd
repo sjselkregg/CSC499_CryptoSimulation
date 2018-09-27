@@ -1,0 +1,26 @@
+package cryptoSimulationTests;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+import cryptoSimulation.Miner;
+
+public class minerTest {
+	
+	
+	@Test
+	public void testInitialization()
+	{
+		Miner x = new Miner(1);
+		Miner y = new Miner(2);
+		Miner z = new Miner(3);
+		System.out.print("Miner Pools: ");
+		System.out.print(x.getPool());
+		System.out.print(" ");
+		System.out.print(y.getPool());
+		System.out.print(" ");
+		System.out.print(z.getPool());
+	}
+
+}

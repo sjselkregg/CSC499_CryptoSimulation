@@ -1,0 +1,20 @@
+package cryptoSimulation;
+
+public class CryptoCurrency 
+{
+	public int REWARD = 25;
+	
+	
+	
+	
+	
+	public int getValue()
+	{
+		return value;
+	}
+	
+	public int getReward()
+	{
+		return REWARD;
+	}
+}

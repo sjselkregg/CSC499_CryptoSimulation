@@ -1,0 +1,47 @@
+package cryptoSimulation;
+/**
+ * Class that runs the simulation. Starts and ends simulation. Manages when events should occur.
+ * @author Sam Selkregg
+ */
+public class Main 
+{
+	public Population p = new Population();
+	public int currentRound = 0;
+	public int roundsSinceValueChange = 1;
+	
+	public Main()
+	{
+		//clear the simulationReportFile
+		
+		//create the population
+		p.create(100000, p);
+		//How many times blocks are added to the Bitcoin Chain in a years time (roughly)
+		//Blocks solved every ten minutes
+		Run(52560);
+	}
+	
+	public void Run(int r)
+	{
+		currentRound = 1;
+		p.totalEvaluation();
+		for(int i = 0; i<r; i++)
+		{
+			currentRound++;
+			
+			//updates the value of the currency every 50 rounds (a little under 
+			//three times a 'day' for this simulation)
+			roundsSinceValueChange++;
+			if(roundsSinceValueChange = 50)
+			{
+				p.updateValue();
+				roundsSinceValueChange = 1;
+			}
+			p.totalEvaluation();
+		}
+	}
+	
+	public int getRound()
+	{
+		return currentRound;
+	}
+}
