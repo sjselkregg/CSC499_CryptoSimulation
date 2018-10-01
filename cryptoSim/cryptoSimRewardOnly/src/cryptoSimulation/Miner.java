@@ -26,7 +26,7 @@ public class Miner
 	private double changeProbability = 0;
 	
 	//miners participation status
-	public boolean participating;
+	public boolean participating = true;
 	public int minerID;
 	private int roundsParticipating = 0;
 	private int roundsIdle = 0;
@@ -47,13 +47,13 @@ public class Miner
 		if(r < 25)
 		{
 			cost = 530;
-		}else if(r < 50)
+		}else if((r < 50)&&(r >= 25))
 		{
 			cost = 2250;
-		}else if(r < 75)
+		}else if((r < 75)&&(r >=50))
 		{
 			cost = 4750;
-		}else if(r < 90)
+		}else if((r < 90)&&(r>=75))
 		{
 			cost = 7750;
 		}else
@@ -66,7 +66,7 @@ public class Miner
 		if(x <= 25)
 		{
 			wealth = (int)(Math.random() * 50000 + 30000);
-		}else if(x <= 87)
+		}else if((x <= 87)&&(x>25))
 		{
 			wealth = (int)(Math.random() * 150000 + 50000);
 		}else
@@ -83,7 +83,7 @@ public class Miner
 		}else if((iD<=98000)&&(iD>50000))
 		{
 			//the other half split among less popular pools
-			pool = (int)(Math.random() * 20 + 6);
+			pool = (int)(Math.random() * 20 + 1);
 		}else
 		{
 			//about 2% of the population are on their own
@@ -167,12 +167,14 @@ public class Miner
 			if(calculateLeaveDecision()==true)
 			{
 				changeStatus();
+				updatePoolValue(population.getPoolQuantities(), -1);
 			}
 		}else
 		{
 			if(calculateJoinDecision()==true)
 			{
 				changeStatus();
+				updatePoolValue(population.getPoolQuantities(), 1);
 			}
 		}
 	}
@@ -410,6 +412,22 @@ public class Miner
 	 */
 	public void roundChange(int myPoolSize)
 	{
+		if(minerID%100 == 0)
+		{
+			System.out.println();
+			System.out.print(minerID);
+			System.out.println("-------");
+			System.out.print("Participation Status: ");
+			System.out.println(participating);
+			System.out.print("Rounds Since Won: ");
+			System.out.println(roundsSinceWon);
+			System.out.print("Populations Value of Currency: ");
+			System.out.println(population.cryptoValue);
+			System.out.println();
+			
+			
+		}
+		
 		roundsSinceWon++;
 		if(myPoolSize == 0)
 		{
@@ -432,7 +450,10 @@ public class Miner
 		evaluateSituation();
 	}
 	
-	
+	public void updatePoolValue(int[] pools, int change)
+	{
+		pools[pool]+=change;
+	}
 	
 	
 }
