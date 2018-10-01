@@ -34,6 +34,7 @@ public class Population
 		for(int minerID = 0; minerID < (howMany - 1); minerID++)
 		{
 			allMiners.add(new Miner(minerID));
+			allMiners.get(minerID).updatePoolValue(poolQuantities, 1);
 		}
 		updateLists();
 	}
@@ -59,28 +60,29 @@ public class Population
 			if(allMiners.get(i).getStatus() == true)
 			{
 				participating.add(allMiners.get(i));
-				//increment pool quantities
-				poolQuantities[allMiners.get(i).getPool()]++;
 			}else
 			{
 				nonParticipating.add(allMiners.get(i));
 			}
-			
+		
 		}
 	}
+
+
 	
 	/**
 	 * Tells the entire population to evaluate itself at the current situation,
 	 * and make intelligent decisions based on your status.
 	 */
-	public void totalEvaluation()
+	public void totalEvaluation(int round)
 	{
 		distributeRewards();
 		for(int i = 0; i < allMiners.size(); i++)
 		{
 			allMiners.get(i).roundChange(poolQuantities[successfulPool]);
-			updateLists();	
 		}
+		updateLists();	
+		postFileUpdates(round);
 	}
 	
 	/**
@@ -88,7 +90,7 @@ public class Population
 	 */
 	public void distributeRewards()
 	{
-		int winner = (int)(Math.random() * participating.size() + 1);
+		int winner = (int)(Math.random() * participating.size() + 1) -1;
 		int winningPool = participating.get(winner).getPool();
 		successfulPool = winningPool;
 		if(winningPool != 0)
@@ -190,13 +192,17 @@ public class Population
 	 * Updates the simulation report file
 	 * @throws FileNotFoundException 
 	 */
-	public void postFileUpdates(int round) throws FileNotFoundException
+	public void postFileUpdates(int round)
 	{
 		if((round%1000)==0)
 		{
 			String fileName = "simulationReport.txt";
-			@SuppressWarnings("resource")
-			PrintWriter pw = new PrintWriter(fileName);
+			PrintWriter pw = null;
+			try {
+				pw = new PrintWriter(fileName);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
 			pw.print("CURRENT ROUND: ");
 			pw.print(round);
 			pw.println();
@@ -232,4 +238,10 @@ public class Population
 	{
 		return (prevCV * 25);
 	}
+	
+	public int[] getPoolQuantities()
+	{
+		return poolQuantities;
+	}
+	
 }

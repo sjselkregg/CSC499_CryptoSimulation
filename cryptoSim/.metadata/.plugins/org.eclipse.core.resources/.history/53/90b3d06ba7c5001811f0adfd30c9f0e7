@@ -1,0 +1,66 @@
+package cryptoSimulation;
+
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+
+/**
+ * Class that runs the simulation. Starts and ends simulation. Manages when events should occur.
+ * @author Sam Selkregg
+ */
+public class Main 
+{
+	
+	public static int currentRound = 0;
+	public static int roundsSinceValueChange = 1;
+	
+	/**
+	 * Main method to run the program
+	 * @throws FileNotFoundException 
+	 */
+	public static void main(String[] args) throws FileNotFoundException
+	{
+		Population p;
+		p = new Population(100000);
+		p.setPopulation(p);
+		//clear the simulationReportFile
+		String fileName = "simulationReport.txt";
+		PrintWriter pw = new PrintWriter(fileName);
+		pw.print("");
+		pw.close();
+		//How many times blocks are added to the Bitcoin Chain in a years time (roughly)
+		//Blocks solved every ten minutes
+		
+		Run(52560, p);
+		
+	}
+	
+	/**
+	 * While this is running, the simulation is active.
+	 * @param r   how many rounds the simulation should run
+	 */
+	public static void Run(int r, Population p)
+	{
+		currentRound = 1;
+		p.totalEvaluation();
+		for(int i = 0; i<r; i++)
+		{
+			currentRound++;
+			
+			//updates the value of the currency every 50 rounds (a little under 
+			//three times a 'day' for this simulation)
+			roundsSinceValueChange++;
+			if(roundsSinceValueChange == 50)
+			{
+				p.updateValue();
+				roundsSinceValueChange = 1;
+			}
+			
+			p.totalEvaluation();
+		}
+	}
+	
+	public int getRound()
+	{
+		return currentRound;
+	}
+}

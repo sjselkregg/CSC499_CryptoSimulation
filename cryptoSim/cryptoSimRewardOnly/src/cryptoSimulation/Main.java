@@ -17,20 +17,30 @@ public class Main
 	 * Main method to run the program
 	 * @throws FileNotFoundException 
 	 */
-	public static void main(String[] args) throws FileNotFoundException
+	public static void main(String[] args)
 	{
 		Population p;
 		p = new Population(100000);
 		p.setPopulation(p);
+		
+		/*
 		//clear the simulationReportFile
 		String fileName = "simulationReport.txt";
-		PrintWriter pw = new PrintWriter(fileName);
+		PrintWriter pw = null;
+		try {
+			pw = new PrintWriter(fileName);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 		pw.print("");
 		pw.close();
+		*/
+		
 		//How many times blocks are added to the Bitcoin Chain in a years time (roughly)
 		//Blocks solved every ten minutes
 		
 		Run(52560, p);
+		
 	}
 	
 	/**
@@ -40,7 +50,7 @@ public class Main
 	public static void Run(int r, Population p)
 	{
 		currentRound = 1;
-		p.totalEvaluation();
+		p.totalEvaluation(currentRound);
 		for(int i = 0; i<r; i++)
 		{
 			currentRound++;
@@ -54,7 +64,7 @@ public class Main
 				roundsSinceValueChange = 1;
 			}
 			
-			p.totalEvaluation();
+			p.totalEvaluation(currentRound);
 		}
 	}
 	
