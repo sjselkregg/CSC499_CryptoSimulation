@@ -88,16 +88,10 @@ public class Population
 		System.out.println(round);
 		System.out.println();
 		System.out.print("Miners Participating: ");
-		System.out.println(participating.size());
-		System.out.print("Value streak: ");
-		System.out.println(valueStreak);
-		System.out.print("Miners Idle: ");
-		System.out.println(nonParticipating.size());
-		System.out.println("POOL QUANTITIES: ");
-		for(int i = 0; i < poolQuantities.length; i++)
-		{
-			System.out.println(poolQuantities[i]);
-		}
+		System.out.print(participating.size());
+		System.out.println();
+		System.out.println("Miners Idle: ");
+		System.out.print(nonParticipating.size());
 		System.out.println();
 	}
 	
