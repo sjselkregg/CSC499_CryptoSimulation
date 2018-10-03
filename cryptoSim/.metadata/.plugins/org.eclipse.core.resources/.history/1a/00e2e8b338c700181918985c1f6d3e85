@@ -19,7 +19,7 @@ public class Miner
 	//wealth in USD
 	public double wealth;
 	public double startWealth;
-	public double coinsWon;
+	public double coinsWon = 0;
 	private int roundsSinceWon = 0;
 	
 	//how likely a miner is to join/leave a network
@@ -110,7 +110,7 @@ public class Miner
 	 */
 	public void updateCoins(double reward, int val)
 	{
-		coinsWon += reward;
+		coinsWon = coinsWon + reward;
 		
 		double change = val * reward;
 		wealth = wealth + change;
@@ -441,8 +441,7 @@ public class Miner
 			System.out.print("Populations Value of Currency: ");
 			System.out.println(population.cryptoValue);
 			System.out.print("Coins Won: ");
-			System.out.printf("%15.12f", coinsWon);
-			System.out.println();
+			System.out.println(coinsWon);
 			System.out.print("Wealth: ");
 			System.out.println(wealth);
 			System.out.print("Start Wealth: ");
