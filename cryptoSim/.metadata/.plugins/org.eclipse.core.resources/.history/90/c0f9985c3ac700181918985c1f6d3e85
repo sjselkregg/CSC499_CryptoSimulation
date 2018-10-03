@@ -110,7 +110,7 @@ public class Miner
 	 */
 	public void updateCoins(double reward, int val)
 	{
-		coinsWon += reward;
+		coinsWon = coinsWon + reward;
 		
 		double change = val * reward;
 		wealth = wealth + change;

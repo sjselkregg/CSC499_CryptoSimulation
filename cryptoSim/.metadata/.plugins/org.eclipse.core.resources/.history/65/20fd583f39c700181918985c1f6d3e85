@@ -441,8 +441,7 @@ public class Miner
 			System.out.print("Populations Value of Currency: ");
 			System.out.println(population.cryptoValue);
 			System.out.print("Coins Won: ");
-			System.out.printf("%15.12f", coinsWon);
-			System.out.println();
+			System.out.println(coinsWon);
 			System.out.print("Wealth: ");
 			System.out.println(wealth);
 			System.out.print("Start Wealth: ");

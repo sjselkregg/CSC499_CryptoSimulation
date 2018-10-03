@@ -108,9 +108,10 @@ public class Miner
 	 * @param value : the value to update the coins with.
 	 * used by distribute rewards
 	 */
-	public void updateCoins(double reward, int val)
+	public void updateCoins(double r, int val)
 	{
-		coinsWon += reward;
+		double reward = r;
+		coinsWon = coinsWon + reward;
 		
 		double change = val * reward;
 		wealth = wealth + change;
